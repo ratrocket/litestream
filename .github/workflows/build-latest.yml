@@ -17,28 +17,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.24'
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
 
-    - name: Prepare for static linking
-      run: apt install -y --no-install-recommends musl-dev musl-tools
+      - name: Prepare for static linking
+        run: apt install -y --no-install-recommends musl-dev musl-tools
 
-    - name: Build
-      run: GOAMD64=v4 CGO_ENABLED=1 CC=musl-gcc go build -v -ldflags='-w -linkmode=external -extldflags=-static' -tags osusergo,netgo ./cmd/litestream
+      - name: Build
+        run: GOAMD64=v4 CGO_ENABLED=1 CC=musl-gcc go build -v -ldflags='-w -linkmode=external -extldflags=-static' -tags osusergo,netgo ./cmd/litestream
 
-    - name: Compress
-      run: xz litestream
+      - name: Compress
+        run: xz litestream
 
-    - name: Read version
-      id: getversion
-      run: D=$(date -u +%Y-%m-%d-%H%M); H=$(git rev-parse short HEAD); echo "$D-$F" >> $GITHUB_OUTPUT
+      - name: Read version
+        id: getversion
+        run: D=$(date -u +%Y-%m-%d-%H%M) H=$(git rev-parse short HEAD) echo "$D-$F" >> $GITHUB_OUTPUT
 
-    - uses: ratrocket/action-automatic-releases@latest
-      if: github.ref == 'refs/heads/main'
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        files: "*.xz"
-        automatic_release_tag: $GITHUB_OUTPUT
-        prerelease: false
+      - uses: ratrocket/action-automatic-releases@latest
+        if: github.ref == 'refs/heads/main'
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          files: "*.xz"
+          automatic_release_tag: $GITHUB_OUTPUT
+          prerelease: false

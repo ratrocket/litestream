@@ -1,0 +1,7 @@
+This is my fork for benbjohnson/litestream so I can build releases from
+HEAD that instances I'm running can download (the instances won't/don't
+have go installed).
+
+The build I do is a static build using musl and the binary is compressed
+with xz.  It should be available in
+https://github.com/ratrocket/litestream/releases.

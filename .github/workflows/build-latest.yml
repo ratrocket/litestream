@@ -1,5 +1,6 @@
 # This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+# For more information see:
+# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
 
 name: build-latest
 
@@ -10,19 +11,34 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
-        go-version: '1.24.2'
+        go-version: '1.24'
+
+    - name: Prepare for static linking
+      run: apt install -y --no-install-recommends musl-dev musl-tools
 
     - name: Build
-      run: go build -v ./...
+      run: GOAMD64=v4 CGO_ENABLED=1 CC=musl-gcc go build -v -ldflags='-w -linkmode=external -extldflags=-static' -tags osusergo,netgo ./cmd/litestream
 
-    - name: Test
-      run: go test -v ./...
+    - name: Compress
+      run: xz litestream
+
+    - name: Read version
+      id: getversion
+      run: D=$(date -u +%Y-%m-%d-%H%M); H=$(git rev-parse short HEAD); echo "$D-$F" >> $GITHUB_OUTPUT
+
+    - uses: ratrocket/action-automatic-releases@latest
+      if: github.ref == 'refs/heads/main'
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        files: "*.xz"
+        automatic_release_tag: $GITHUB_OUTPUT
+        prerelease: false

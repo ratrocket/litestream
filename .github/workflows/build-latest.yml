@@ -33,7 +33,7 @@ jobs:
 
       - name: Read version
         id: getversion
-        run: D=$(date -u +%Y-%m-%d-%H%M) H=$(git rev-parse short HEAD) echo "$D-$F" >> $GITHUB_OUTPUT
+        run: D=$(date -u +%Y-%m-%d-%H%M); H=$(git rev-parse --short HEAD); echo "$D-$H" >> $GITHUB_OUTPUT
 
       - uses: ratrocket/action-automatic-releases@latest
         if: github.ref == 'refs/heads/main'

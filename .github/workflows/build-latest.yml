@@ -23,7 +23,7 @@ jobs:
           go-version: '1.24'
 
       - name: Prepare for static linking
-        run: apt install -y --no-install-recommends musl-dev musl-tools
+        run: sudo apt-get install -y --no-install-recommends musl-dev musl-tools
 
       - name: Build
         run: GOAMD64=v4 CGO_ENABLED=1 CC=musl-gcc go build -v -ldflags='-w -linkmode=external -extldflags=-static' -tags osusergo,netgo ./cmd/litestream

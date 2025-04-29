@@ -31,14 +31,17 @@ jobs:
       - name: Compress
         run: xz litestream
 
+      - name: Write version
+        run: D=$(date -u +%Y-%m-%d-%H%M); H=$(git rev-parse --short HEAD); echo "$D-$H" > version
+
       - name: Read version
         id: getversion
-        run: D=$(date -u +%Y-%m-%d-%H%M); H=$(git rev-parse --short HEAD); echo "$D-$H" >> $GITHUB_OUTPUT
+        run: echo "::set-output name=version::$(cat version)"
 
       - uses: ratrocket/action-automatic-releases@latest
         if: github.ref == 'refs/heads/main'
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           files: "*.xz"
-          automatic_release_tag: $GITHUB_OUTPUT
+          automatic_release_tag: ${{ steps.getversion.outputs.version }}
           prerelease: false

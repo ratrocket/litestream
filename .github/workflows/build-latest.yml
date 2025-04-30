@@ -26,7 +26,7 @@ jobs:
         run: sudo apt-get install -y --no-install-recommends musl-dev musl-tools
 
       - name: Build
-        run: GOAMD64=v4 CGO_ENABLED=1 CC=musl-gcc go build -v -ldflags='-w -linkmode=external -extldflags=-static' -tags osusergo,netgo ./cmd/litestream
+        run: GOAMD64=v3 CGO_ENABLED=1 CC=musl-gcc go build -v -ldflags='-w -linkmode=external -extldflags=-static' -tags osusergo,netgo ./cmd/litestream
 
       - name: Compress
         run: xz litestream
